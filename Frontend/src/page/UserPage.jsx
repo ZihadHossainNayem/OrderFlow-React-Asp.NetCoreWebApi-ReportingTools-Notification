@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { MdOutlineNotificationsNone } from "react-icons/md";
 
 // Mock data
 const mockBooks = [
   { id: 1, title: "Book One", price: 10 },
   { id: 2, title: "Book Two", price: 12 },
+];
+
+const mockNotifications = [
+  { id: 1, message: "Your order is on the way" },
+  { id: 2, message: "Your order is cancelled" },
 ];
 
 function UserPage() {
@@ -14,6 +20,9 @@ function UserPage() {
     name: "",
     address: "",
   });
+
+  const [notifications, setNotifications] = useState(mockNotifications);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   useEffect(() => {
     // here API call to  backend to fetch books
@@ -76,7 +85,35 @@ function UserPage() {
 
   return (
     <div className="p-8 max-w-[1500px] mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Select a Book to Order</h2>
+      <div className="flex justify-between mb-4">
+        <h2 className="text-2xl font-bold mb-4">Select a Book to Order</h2>
+        <div className="relative">
+          <button
+            onClick={() => setShowNotifications(!showNotifications)}
+            className="relative bg-gray-200 hover:bg-gray-300 text-gray-800 p-2 rounded-full"
+          >
+            <MdOutlineNotificationsNone size={25} />
+            {notifications.length > 0 && (
+              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-400"></span>
+            )}
+          </button>
+          {showNotifications && (
+            <div className="absolute right-0 mt-2 w-[400px] bg-white border rounded shadow-xl">
+              <ul>
+                {notifications.map((notification) => (
+                  <li
+                    key={notification.id}
+                    className="p-4 border-b hover:bg-gray-100 cursor-pointer"
+                  >
+                    {notification.message}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+
       <hr className="border-t border-blue-500" />
       <div className="grid grid-cols-2 gap-4 cursor-pointer my-10">
         {books.map((book) => (
