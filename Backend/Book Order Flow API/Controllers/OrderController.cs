@@ -1,7 +1,9 @@
 ﻿using Book_Order_Flow_API.Models;
+using Book_Order_Flow_API.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Book_Order_Flow_API.Controllers
 {
@@ -11,9 +13,12 @@ namespace Book_Order_Flow_API.Controllers
     {
         private readonly BookDbContext _context;
 
-        public OrderController(BookDbContext context)
+        private readonly IKafkaProducerService _kafkaProducerService;
+
+        public OrderController(BookDbContext context, IKafkaProducerService kafkaProducerService)
         {
             _context = context;
+            _kafkaProducerService = kafkaProducerService;
         }
 
         [HttpGet]
@@ -49,8 +54,16 @@ namespace Book_Order_Flow_API.Controllers
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
+            // Serialize the order to JSON and send it to a Kafka topic
+            var orderJson = JsonConvert.SerializeObject(order);
+            Console.WriteLine($"Sending message to Kafka: {orderJson}");
+            await _kafkaProducerService.ProduceAsync("orders", orderJson); // Use the service
+            Console.WriteLine("Message sent successfully");
+
             return CreatedAtAction("GetOrder", new { id = order.Id }, order);
         }
+
+       
 
     }
 }

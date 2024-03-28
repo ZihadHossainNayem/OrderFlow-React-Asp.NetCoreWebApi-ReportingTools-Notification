@@ -5,7 +5,7 @@ import AdminPage from "./page/AdminPage";
 function App() {
   return (
     <Router>
-      <div className="bg-gray-200 flex justify-center items-center">
+      <div className="bg-gray-100 flex justify-center items-center">
         <div className="text-center py-10">
           <h1 className="text-4xl font-bold ">BookOrderFlow</h1>
           <h3 className="my-8 text-gray-500">
